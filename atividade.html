@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fila de Atendimento</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            display: inline-block;
+        }
+
+        /* cores por tipo */
+        .tcc {
+            background-color: lightblue; /* azul claro */
+        }
+
+        .ext {
+            background-color: greenyellow; /* verde claro */
+        }
+        li {
+          margin-bottom: 5px;
+          padding: 5px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 2px;           
+        }
+    </style>
+
+</head>
+<body>
+
+    <h2>Fila de Atendimento</h2>
+
+    <!-- FORMULÁRIO -->
+    <label>Nome:</label><br>
+    <div class="toolbar">
+    <input type="text" id="nome"><br><br>
+
+    <!--<label>Tipo:</label><br>-->
+
+    <button onclick="incluir()">Incluir</button>
+
+    <input type="radio" id="tcc" name="tipo" value="TCC" checked>
+    <label for="tcc">TCC</label><br>
+
+    <input type="radio" id="ext" name="tipo" value="EXT">
+    <label for="ext">EXT</label><br><br>
+
+    </div>
+    <hr>
+
+    <!-- fila (vazia inicialmente) -->
+    <h3>Fila:</h3>
+    <p>Total: <spam id="contador">0</spam></p> 
+     
+    <ol id="fila">
+        <!-- itens -->
+    </ol>
+
+
+
+
+    <!-- funcoes -->
+    <script>
+
+        let cont = 0;
+
+
+
+        function incluir() {
+
+            // recupera dados do form
+            var nome = document.getElementById("nome").value;
+
+            // pega o radio selecionado
+            var tipoSelecionado = document.querySelector('input[name="tipo"]:checked');
+            var tipo = tipoSelecionado ? tipoSelecionado.value : "";
+
+            // validação, simples
+            if (nome == "") {
+                alert("Por favor, digite o nome do aluno!");
+                return;
+            }
+
+            // montagem do item
+            var item = document.createElement("li");
+
+            //ap01-A uppercase ------------------------------------
+            var linha = nome.toUpperCase() + " (" + tipo + ")";
+
+            if (tipo === "TCC") {
+               item.classList.add("tcc");
+            } else if (tipo === "EXT") {
+                item.classList.add("ext");
+            }
+
+            item.textContent = linha;
+
+            // adicionando na lista
+            document.getElementById("fila").appendChild(item);
+
+
+            //ap01-C atende ------------------------------------
+            // carregando um comportamento pra cada item da lista
+            item.onclick = comportamentoItem;
+
+
+            //ap01-B contador ------------------------------------
+            //var lista = document.getElementById('fila');
+            //var size = lista.querySelectorAll("li").length;
+            cont++;
+            size = cont;
+            document.getElementById("contador").textContent = size;
+
+
+
+            // limpa
+            document.getElementById("nome").value = "";
+            document.getElementById("nome").focus();
+
+
+            salvarFila();
+        }
+
+
+
+
+        function comportamentoItem() {
+            let item = this;
+
+            if (item.classList.contains("atendido")) {
+
+                let remove = confirm("Remover?");
+
+                if (remove) {
+                    item.remove();
+                    cont--;
+                } else {
+                    item.classList.remove("atendido");
+                    item.style.textDecoration = "none";
+                    item.style.color = "black";
+                }
+
+            } else {
+                item.classList.add("atendido");
+                item.style.textDecoration = "line-through";
+                item.style.color = "gray";
+            }
+
+            document.getElementById("contador").textContent = cont;
+            salvarFila(); // salva o muda status
+        }
+
+
+        //persistencia simples localstorage
+
+        function salvarFila() {
+            let itens = [];
+
+            document.querySelectorAll("#fila li").forEach(li => {
+                itens.push({
+                    texto: li.textContent,
+                    classe: li.className,
+                    atendido: li.classList.contains("atendido")
+                });
+            });
+
+            localStorage.setItem("fila", JSON.stringify(itens));
+        }
+
+        function carregarFila() {
+            let dados = localStorage.getItem("fila");
+
+            if (!dados) return;
+
+            let itens = JSON.parse(dados);
+
+            itens.forEach(d => {
+                let item = document.createElement("li");
+                item.textContent = d.texto;
+
+                if (d.classe) item.className = d.classe;
+
+                if (d.atendido) {
+                    item.classList.add("atendido");
+                    item.style.textDecoration = "line-through";
+                    item.style.color = "gray";
+                }
+
+                // reaplica o comportamento de clique
+                item.onclick = comportamentoItem;
+
+                document.getElementById("fila").appendChild(item);
+                cont++;
+            });
+
+            document.getElementById("contador").textContent = cont;
+        }
+
+
+        carregarFila();
+
+    </script>
+
+</body>
+</html>
