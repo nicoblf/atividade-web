@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Flask 2.0</title>
+    <!-- url_for gera o caminho correto para a pasta "static" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <main class="card">
+        <h1>Hello, Flask!</h1>
+        <p class="subtitulo">Versão 2 — Comunicação entre Front-end e Back-end com JSON</p>
+
+        <button id="btn-buscar">Buscar dados</button>
+
+        <!-- Elementos do DOM que o JavaScript vai preencher com os dados da API -->
+        <div id="resultado">
+            <p id="mensagem"></p>
+            <p id="detalhes"></p>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

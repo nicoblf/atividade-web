@@ -1,0 +1,27 @@
+@startuml diagrama-sequencia
+title Hello-Flask 2.0 - Comunicação entre Front-end e Back-end com JSON
+
+actor "Usuário" as U
+participant "Navegador\n(HTML/CSS)" as N
+participant "JavaScript\n(script.js)" as JS
+participant "Servidor Flask\n(app.py)" as F
+
+== Etapa 1: carregamento inicial da interface ==
+U -> N : acessa http://127.0.0.1:5000/
+N -> F : GET /
+F -> F : render_template("index.html")
+F --> N : 200 OK (HTML)
+N -> F : GET /static/style.css e /static/script.js
+F --> N : 200 OK (CSS e JS)
+N --> U : exibe a página com o botão
+
+== Etapa 2: busca assíncrona de dados ==
+U -> JS : clica em "Buscar dados"
+JS -> F : fetch("/api/pegadados") [GET]
+F -> F : monta dicionário e chama jsonify()
+F --> JS : 200 OK (application/json)\n{ mensagem, versao, horario }
+JS -> JS : resposta.json()
+JS -> N : atualiza #mensagem e #detalhes (DOM)
+N --> U : mostra os dados sem recarregar a página
+
+@enduml
